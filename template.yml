@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  vars:
+    tag_events: ./result/tag.log
+  vars_files:
+    - variables.yml
+  tasks:
+    - shell: pip freeze
+      register: packages
+
+    - include_role: name={{ example_roles.0 }}
+    - include_role: name={{ example_roles.1 }}
+
+    - name: Simple log events
+      lineinfile:
+        dest: "{{ tag_events }}"
+        line: "{{ ansible_date_time.iso8601_micro }} test "
+        create: yes
+      tags: log

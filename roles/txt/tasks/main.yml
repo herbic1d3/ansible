@@ -1,0 +1,22 @@
+- name: Check {{ out_txt_file }} exists
+  stat: path={{ out_txt_file }}
+  register: stat_result
+
+- block:
+    - name: Make backup for output.txt file
+      copy: remote_src=True src={{ out_txt_file }} dest={{ out_txt_file }}.{{ ansible_date_time.epoch }}
+
+    - name: Remove old version file
+      file: path={{ out_txt_file }} state=absent
+
+  when: stat_result.stat.exists
+
+- name: Make backup packages version
+  lineinfile:
+    dest: "{{ out_txt_file }}"
+    line: "{{ item.split('==')[0] }},{{ item.split('==')[1] }}"
+    create: yes
+  with_items:
+    - "{{ packages.stdout_lines | default([])}}"
+  when:
+    - "(item | length != 0 )"

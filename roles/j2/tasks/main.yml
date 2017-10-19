@@ -1,0 +1,25 @@
+- name: Check {{ out_conf_file }} exists
+  stat: path={{ out_conf_file }}
+  register: stat_result
+
+- block:
+    - name: Make backup for out_conf_file file
+      copy: remote_src=True src={{ out_conf_file }} dest={{ out_conf_file }}.{{ ansible_date_time.epoch }}
+
+    - name: Remove old version file
+      file: path={{ out_conf_file }} state=absent
+
+  when: stat_result.stat.exists
+
+- set_fact: pkg=""
+
+- set_fact: pkg="{{ item.split('==')[0] if pkg|length <  item.split('==')[0]|length else pkg}}"
+  with_items: "{{ packages.stdout_lines | default([])}}"
+
+- set_fact: pkg_length="{{ pkg|length }}"
+
+- name: Simple template generation
+  template: src=output.j2 dest={{ out_conf_file }}
+  with_items:
+    - pkg_length
+    - "{{ packages.stdout_lines | default([])}}"

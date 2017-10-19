@@ -1,0 +1,7 @@
+max package name length: {{ pkg_length }}
+
+# --------------------------------------
+
+{% for item in packages.stdout_lines %}
+package: {{ item.split('==')[0] }} version: {{ item.split('==')[1] }}
+{% endfor %}

@@ -1,4 +1,5 @@
 #!/bin/bash
+# Run callback & return result to console
 
 MODULE="./callback/packages.py"
 PLAYBOOK="packages.yml"

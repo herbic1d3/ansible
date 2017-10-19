@@ -1,5 +1,4 @@
 ---
-# - hosts: "{{ host | default('all') }}"
 - hosts: localhost
   tasks:
     - shell: pip freeze
